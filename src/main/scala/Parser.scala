@@ -25,18 +25,18 @@ object Parser extends Serializable {
     * massage the row to come up with key value pair (key is request ip, value
     * contains all the fields)
     */
-  def generateKVPairs(input: RDD[String]): KVPairsTyp = {
-    input.map(data => {
+  def generateKVPairs: PartialFunction[RDD[String], KVPairsTyp] = {
+    case input: RDD[String] => input.map(data => {
       val row = data.split(" \"").flatMap(_.split("\" ")).filter(f => f != " ").toList;
       row(0).split(" ") ++ List(row(1)) ++ List(row(2)) ++ row(3).split(" ")})
-      .map(row => (row(2).split(":")(0), List((fmt.parseMillis(row(0)), row(0), row(1), row(2), row(3), row(4), row(5), row(6), row(7), row(8), row(9), row(10), row(11), row(12), row(13), row(14)))))
+        .map(row => (row(2).split(":")(0), List((fmt.parseMillis(row(0)), row(0), row(1), row(2), row(3), row(4), row(5), row(6), row(7), row(8), row(9), row(10), row(11), row(12), row(13), row(14)))))
   }
 
   /**
     * group ip and sort base on timestamp
     */
-  def groupAndSortOnTs(data: KVPairsTyp): KVPairsTyp = {
-    data.reduceByKey(_ ++ _).map(f => (f._1, f._2.sortBy(_._1)))
+  def groupAndSortOnTs: PartialFunction[KVPairsTyp, KVPairsTyp] = {
+    case input: KVPairsTyp => input.reduceByKey(_ ++ _).map(f => (f._1, f._2.sortBy(_._1)))
   }
 
   /**
@@ -51,8 +51,8 @@ object Parser extends Serializable {
   /**
     * put row into each session
     */
-  def sessionizeData(input: KVPairsTyp): SessionizeTyp = {
-    input.map(f => (f._1, {val ts_pre = f._2.map(_._1);
+  def sessionizeData: PartialFunction[KVPairsTyp, SessionizeTyp] = {
+    case input: KVPairsTyp => input.map(f => (f._1, {val ts_pre = f._2.map(_._1);
       val ts = ts_pre.tail.padTo(ts_pre.size, ts_pre.last);
       f._2.zip(ts).map(t => (t._2 - t._1._1, t._1)).zipWithIndex})).map(d => {val break_point = d._2.filter(_._1._1 > sessionTime).map(_._2); (d._1, massageList(d._2, break_point))})
   }
@@ -60,9 +60,18 @@ object Parser extends Serializable {
   /**
     * Prepare a common data structure for future analytics
     */
+  def commonStructure: PartialFunction[SessionizeTyp, AnalyticsTyp] = {
+    case input: SessionizeTyp => input.map(f => (f._1, f._2.map(_.map(d => (d._1._2._1, d._1._2._13)))))
+  }
 
-  def prepareForAnalytics(input: SessionizeTyp): AnalyticsTyp = {
-    input.map(f => (f._1, f._2.map(_.map(d => (d._1._2._1, d._1._2._13)))))
+  /**
+    * Chain functions together
+    */
+  def prepareForAnalytics: PartialFunction[RDD[String], AnalyticsTyp] = {
+    generateKVPairs andThen
+    groupAndSortOnTs andThen
+    sessionizeData andThen
+    commonStructure
   }
 
   /**

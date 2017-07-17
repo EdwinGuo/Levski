@@ -17,20 +17,14 @@ object Main extends Serializable {
 
   val filename = "file:////Users/EdwinGuo/WeblogChallenge/data/2015_07_22_mktplace_shop_web_log_sample.log"
 
-  val s1 = spark.sparkContext.textFile(filename)
+  val data = spark.sparkContext.textFile(filename)
 
-  val s2 = generateKVPairs(s1)
+  val parsedData = prepareForAnalytics(data)
 
-  val s3 = groupAndSortOnTs(s2)
+  parsedData.cache
 
-  val s4 = sessionizeData(s3)
+  val sessionData = averageSessionTime(parsedData)
 
-  val s5 = prepareForAnalytics(s4)
-
-  s5.cache
-
-  val s6 = averageSessionTime(s5)
-
-  val s7 = retrieveUniqUrl(s5)
+  val uniqUrlData = retrieveUniqUrl(parsedData)
 
 }
