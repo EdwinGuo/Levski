@@ -42,11 +42,12 @@ object Parser extends Serializable {
   /**
     * to group the row into each session busket
     */
-  def massageList(lst: MsgListTyp, cond: List[Int]): MsgListOutputTyp =
-  {if (cond.isEmpty)
-  {List(lst)}
-  else
-  {List(lst.take(cond.head)) ++ massageList(lst.drop(cond.head), cond.tail.map(_ - cond.head))}}
+  def massageList(lst: MsgListTyp, cond: List[Int]): MsgListOutputTyp ={
+    if (cond.isEmpty)
+    {List(lst)}
+    else
+    {List(lst.take(cond.head)) ++ massageList(lst.drop(cond.head), cond.tail.map(_ - cond.head))}
+  }
 
   /**
     * put row into each session

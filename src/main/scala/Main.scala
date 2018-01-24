@@ -12,7 +12,6 @@ object Main extends Serializable {
   val spark = SparkSession
     .builder()
     .appName("Weblogchallenge")
-  //.config()
     .getOrCreate()
 
   val filename = "file:////Users/EdwinGuo/WeblogChallenge/data/2015_07_22_mktplace_shop_web_log_sample.log"
