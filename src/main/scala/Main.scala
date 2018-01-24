@@ -9,21 +9,23 @@ import Levski.Parser._
   */
 object Main extends Serializable {
 
-  val spark = SparkSession
-    .builder()
-    .appName("Weblogchallenge")
-    .getOrCreate()
+  def main(args: Array[String]) {
+    val spark = SparkSession
+      .builder()
+      .appName("Weblogchallenge")
+    //.config()
+      .getOrCreate()
 
-  val filename = "file:////Users/EdwinGuo/WeblogChallenge/data/2015_07_22_mktplace_shop_web_log_sample.log"
+    val filename = "file:////Users/EdwinGuo/WeblogChallenge/data/2015_07_22_mktplace_shop_web_log_sample.log"
 
-  val data = spark.sparkContext.textFile(filename)
+    val data = spark.sparkContext.textFile(filename)
 
-  val parsedData = prepareForAnalytics(data)
+    val parsedData = prepareForAnalytics(data)
 
-  parsedData.cache
+    parsedData.cache
 
-  val sessionData = averageSessionTime(parsedData)
+    val sessionData = averageSessionTime(parsedData)
 
-  val uniqUrlData = retrieveUniqUrl(parsedData)
-
+    val uniqUrlData = retrieveUniqUrl(parsedData)
+  }
 }
