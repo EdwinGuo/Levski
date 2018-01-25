@@ -81,7 +81,7 @@ class TwoSum {
 
   public static void main(String[] args) {
     int[] test = new int[]{3, 10, 2, 9, 6, 4, 7};
-    int target = 13;
+    int target = 11;
     TwoSum ts = new TwoSum(test, target);
 
     LinkedList<Range> ll1 = ts.returnTwoSumSolutionOne();
