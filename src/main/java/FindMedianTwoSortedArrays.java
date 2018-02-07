@@ -34,62 +34,21 @@ class FindMedianTwoSortedArrays {
   // if size(array1 + array2) / 2 == 1 (as in size is odd), then median = max(Ul, Dl)
 
   // arr1.length < arr2.length, only need to remember cut1.
-  public double cutArray(int[] arr1, int[] arr2, Node cut) {
-    int cut1 =(cut.right - cut.left) / 2;
-    int s1 = nums1.length;
-    int s2 = nums2.length;
-    int s = nums1 + nums2;
-
-    int Ul = s1[cut1 -1];
-    int Ur = s1[cut1];
-
-    int Dl = s2[s/2 - cut1];
-    int Dr = s2[s/2 - cut1 + 1];
-
-    if (Ul > Dr) {
-      // move cut to the left
-      cutArray(arr1, arr2, new Node(cut.left, cut1 - 1));
-    }
-
-    if (Ur < Dl) {
-      // move cut to the right
-      cutArray(arr1, arr2, new Node(cut - 1, cut.right));
-    }
-
-    // if the above two condition pass, then there is the median and we can start return the result
-    if (s / 2 == 1) {
-      return Double.toDouble(Math.max(arr1[Ul], arr2[Dl]));
-    } else {
-      return Double.toDouble((Math.max(arr1[Ul], arr2[Dl]) + Math.min(arr1[Ur], arr2[Dl])))/2;
-    }
-  }
-
-  public double calEdgeCase(int[] nums1, int[] nums2) {
-    // case 1: if there is no intersect between two array
-    if (nums1[num1.length - 1] < nums2[0] ) {
-      if ((nums1.length + nums2.length ) / 2 == 0) {
-        if (nums1.length == nums2.length) {
-          return Double.toDouble(nums1[num1.length - 1] + nums2[0]) / 2;
-        } else {
-          return Double.toDouble(nums2[(nums2.length + nums1.length)/2 - nums1.length - 1] + nums2[(nums2.length + nums1.length)/2 - nums1.length]) / 2;
-        }
-      } else {
-        return Double.toDouble(nums2[(nums2.length + nums1.length)/2 - nums1.length]);
-      }
-    }
-  }
-
   public double findMedianSortedArrays(int[] nums1, int[] nums2) {
-    if (nums1.length == 0 || nums1 == null) return nums2.length / 2 == 0 ? (nums2[nums2.length/2 -1] + nums2[nums2.length/2]) / 2 : nums2[nums2.length/2];
-    if (nums2.length == 0 || nums2 == null) return nums1.length / 2 == 0 ? (nums1[nums1.length/2 -1] + nums1[nums1.length/2]) / 2 : nums2[nums1.length/2];
+    if (nums1.length == 0 && nums2.length == 0) return 0.0;
+
+    System.out.println(Arrays.toString(nums1));
+    System.out.println(Arrays.toString(nums2));
+    if (nums1.length == 0 || nums1 == null) return nums2.length % 2 == 0 ? ((double) (nums2[nums2.length/2 -1] + nums2[nums2.length/2])) / 2 : (double) nums2[nums2.length/2];
+    if (nums2.length == 0 || nums2 == null) return nums1.length % 2 == 0 ? ((double) (nums1[nums1.length/2 -1] + nums1[nums1.length/2])) / 2 :(double) nums1[nums1.length/2];
 
     // Make sure use the shorter one as the anchor array
     if (nums1.length > nums2.length) {
-      findMedianSortedArrays(nums2, nums1);
+      return findMedianSortedArrays(nums2, nums1);
     }
 
     // Taking care of extreme case here
-    if (nums1[num1.length - 1] < nums2[0]) {
+    if (nums1[nums1.length - 1] < nums2[0]) {
       return calEdgeCase(nums1, nums2);
     }
 
@@ -98,12 +57,114 @@ class FindMedianTwoSortedArrays {
     }
 
     // another edge case is the shorter array only contain 1 element
-    // TODO
+    if (nums1.length == 1 || nums2.length == 1) return calEdgeOneCase(nums1, nums2);
+
+
+    System.out.println(Arrays.toString(nums1));
+    System.out.println(Arrays.toString(nums2));
 
     return cutArray(nums1, nums2, new Node(0, nums1.length));
   }
 
-  public class Node {
+  public double cutArray(int[] arr1, int[] arr2, Node cut) {
+    int cut1 =cut.left + (cut.right - cut.left) / 2;
+    int s1 = arr1.length;
+    int s2 = arr2.length;
+    int s = s1 + s2;
+
+    System.out.println("cut" + Integer.toString(cut1));
+
+    int Ul = cut1 == 0 ?  arr2[s/2 - cut1 - 1] : arr1[cut1 -1];
+    int Ur = cut1 == (arr1.length -1) ? arr2[s/2 - cut1] : arr1[cut1];
+
+    int Dl = arr2[s/2 - cut1 - 1];
+    int Dr = arr2[s/2 - cut1];
+
+    System.out.println("ul" + Integer.toString(Ul) + ", ur" + Integer.toString(Ur));
+    System.out.println("Dl" + Integer.toString(Dl) + ", dr" + Integer.toString(Dr));
+
+    if (Ul > Dr) {
+      // move cut to the left
+      System.out.println("move left");
+
+      cutArray(arr1, arr2, new Node(cut.left, cut1 ));
+    }
+
+    if (Ur < Dl) {
+      // move cut to the right
+      System.out.println("move right");
+
+      cutArray(arr1, arr2, new Node(cut1 , cut.right));
+
+    }
+
+    // if the above two condition pass, then there is the median and we can start return the result
+    if (s % 2 == 1) {
+      return (double) Math.max(Ul, Dl);
+    } else {
+      double r = (double) (Math.max(Ul, Dl) + Math.min(Ur,Dl));
+      return r / 2;
+    }
+  }
+
+  public double calEdgeOneCase(int[] nums1, int[] nums2) {
+    if (nums1.length == 1 && nums2.length == 1) return (double) (nums1[0] + nums2[0]) / 2;
+
+    if (nums2.length == 1) return calEdgeOneCase(nums2, nums1);
+    if ((nums1.length + nums2.length) % 2 == 0) {
+
+      if (nums1[0] <= nums2[nums2.length / 2]) {
+        double r = (double) Math.max(nums1[0] , nums2[nums2.length / 2 - 1]) + nums2[nums2.length / 2];
+        return r / 2;
+      } else if (nums1[0] <= nums2[nums2.length / 2]) {
+        double r = Math.min(nums1[0] , nums2[nums2.length / 2 + 1]) + nums2[nums2.length / 2];
+        return r / 2;
+      }
+    } else {
+      if (nums1[0] >= nums2[nums2.length / 2 - 1] && nums1[0] <= nums2[nums2.length / 2])
+        return nums1[0];
+      else if (nums1[0] >= nums2[nums2.length / 2]) return nums2[nums2.length / 2];
+      else return nums2[nums2.length / 2 - 1];
+
+    }
+    return 0.0;
+  }
+
+  public double calEdgeCase(int[] nums1, int[] nums2) {
+    int[] longer;
+    int[] shorter;
+    if (nums1.length == nums2.length) {
+      double r = (double) nums1[nums1.length - 1] + nums2[0];
+      return r / 2;
+    }
+    else if (nums1.length > nums2.length) {
+      longer = nums1;
+      shorter = nums2;
+
+      if ((longer.length + shorter.length ) % 2 == 0) {
+        double r = (double) (longer[(longer.length + shorter.length)/2 - 1] + longer[(longer.length + shorter.length)/2]);
+        return r /2;
+      } else {
+        return (double) (longer[(longer.length + shorter.length)/2 - 1]);
+      }
+
+    } else {
+      longer = nums2;
+      shorter = nums1;
+
+      if ((longer.length + shorter.length ) % 2 == 0) {
+        double r = (double) (longer[(longer.length + shorter.length)/2 - shorter.length - 1] + longer[(longer.length + shorter.length)/2 - shorter.length]);
+        return r / 2;
+      } else {
+        double r = (double) longer[(longer.length + shorter.length)/2 - shorter.length];
+        return r;
+      }
+    }
+
+  }
+
+
+  class Node {
     int left;
     int right;
     public Node(int l, int r) {
