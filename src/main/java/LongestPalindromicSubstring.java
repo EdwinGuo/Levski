@@ -39,6 +39,13 @@ class LongestPalindromicSubstring {
   int low = 0;
   int high = 0;
 
+  public void update(String s, int left, int right){
+    if (((right - left) > (high - low))) {
+      low = left;
+      high = right;
+    }
+  }
+
   public String longestPalindrome(String str) {
     // Assume if length equal to 1 then return string itself
     if (str == "" || str.length() == 1) return str;
@@ -47,25 +54,20 @@ class LongestPalindromicSubstring {
     // or (aba)cc, so even or odd number
     for (int i = 0; i< str.length() - 1; i++){
       if (str.charAt(i) == str.charAt(i+1)){
+        update(str, i, i + 1);
         extend(str, i-1, i+2);
-      } else {
-        extend(str, i-1, i+1);
       }
+      extend(str, i-1, i+1);
     }
-
-    return str.substring(low, high);
+    System.out.println("Test: " + str);
+    return str.substring(low, high + 1);
   }
 
   public void extend(String s, int left, int right){
-
-    while(left >0 && right <s.length() && s.charAt(left) == s.charAt(right)){
+    while(left >=0 && right <s.length() && s.charAt(left) == s.charAt(right)){
+      update(s, left, right);
       left--;
       right++;
-    }
-
-    if ((right - left) > (high - low)) {
-      low = left;
-      high = right;
     }
   }
 
