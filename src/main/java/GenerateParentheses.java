@@ -10,16 +10,6 @@ class GenerateParentheses{
   // _ _ _ _ _ _ _ _
 
 
-  public static int countSize(String s, char c){
-    int count = 0;
-    for (int i = 0; i < s.length(); i++){
-      if (s.charAt(i) == count){
-        count++;
-      }
-    }
-    return count;
-  }
-
   public static void generate(int numLeft, String current, List<String> result, int size) {
     if (numLeft == size) {
       while (current.length() != size * 2){
@@ -29,14 +19,13 @@ class GenerateParentheses{
       return;
     }
 
-    for (int i = 0; i < Math.min(numLeft + 1, size * 2 - current.length() - 1); i++){
+    for (int i = 0; i < numLeft + 1; i++){
       String temp = current + new String(new char[i]).replace("\0", ")") ;
-      int right = countSize(temp, ')');
-      int left = current.length() - right;
-      if (right > left) {
+      int right = temp.length() - numLeft;
+      if (right > numLeft || temp.length() > size*2 - 2) {
         break;
       }
-      System.out.println("temp: " + temp );
+      System.out.println("temp: " + temp + "(");
       generate(numLeft + 1, temp + "(", result, size);
     }
     return;
@@ -57,7 +46,7 @@ class GenerateParentheses{
 
 
   public static void main(String args[]) {
-    int n = 3;
+    int n = 4;
 
     List<String> w = generateParenthese(n);
 
