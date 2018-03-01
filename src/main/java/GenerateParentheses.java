@@ -45,6 +45,32 @@ class GenerateParentheses{
   }
 
 
+
+
+  //A very smart way to do recurssive call
+  public static void backtrack(List<String> list, String str, int open, int close, int max){
+
+    if(str.length() == max*2){
+      list.add(str);
+      System.out.println("aa: "+Arrays.toString(list.toArray()));
+
+      return;
+    }
+
+    if(open < max){
+      System.out.println("open before:  " + str + ","  + Integer.toString(open) +"," + Integer.toString(close));
+      backtrack(list, str+"(", open+1, close, max);
+      System.out.println("open:  " + str + ","  + Integer.toString(open) +"," + Integer.toString(close));
+    }
+    if(close < open){
+      System.out.println("close before: " + str + ","  + Integer.toString(open) +"," + Integer.toString(close));
+      backtrack(list, str+")", open, close+1, max);
+      System.out.println("close: " + str + ","  + Integer.toString(open) +"," + Integer.toString(close));
+    }
+  }
+
+
+
   public static void main(String args[]) {
     int n = 4;
 
