@@ -1,7 +1,8 @@
+
 lazy val root = (project in file(".")).
 
 settings(
-  name := "delorean",
+  name := "Levski",
   version := "0.1.0-SNAPSHOT",
   scalaVersion := "2.11.6",
   crossScalaVersions := Seq("2.10.2", "2.10.3", "2.10.4", "2.10.5", "2.11.0", "2.11.1", "2.11.2", "2.11.3", "2.11.4", "2.11.5", "2.11.6"),
@@ -22,3 +23,8 @@ libraryDependencies ++= Seq(
   "joda-time" % "joda-time" % jodaVersion,
   "com.holdenkarau" % "spark-testing-base_2.11" % sparkTestingVersion
 )
+
+assemblyMergeStrategy in assembly := {
+ case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+ case x => MergeStrategy.first
+}

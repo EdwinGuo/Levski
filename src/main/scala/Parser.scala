@@ -4,10 +4,19 @@ import org.joda.time.format._
 import org.apache.spark.rdd.RDD
 import java.io.Serializable
 
+object Constants {
+   val fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
+}
+
 object Parser extends Serializable {
   // 15 minutes session window
   val sessionTime = 900000
 
+  /** DataTimeFormat is not serializable, so in order to make this work, there are
+    * two options, either you instantiate the variable in every single interation (within map),
+    * the second option, which is the better one, would be make the variable static
+    * through define it in an idenpendent object like the one in the Constant object
+    * /
   @transient
   val fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
 
